@@ -1,0 +1,27 @@
+FROM centos
+
+#Install basic libraries and python
+RUN yum install -y epel-release && \
+    yum install -y --nogpgcheck https://repo.saltstack.com/yum/redhat/salt-repo-latest-2.el7.noarch.rpm && \
+    yum update -y && \
+    yum install -y virt-what salt-minion python36 python36-libs python36-devel python36-pip && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+
+#Create the flask app environment
+RUN mkdir -p /opt/app
+COPY ./app/app.py /opt/app/app.py
+COPY ./app/requirements.txt /opt/app/requirements.txt
+RUN pip3.6 install --upgrade pip
+RUN pip3.6 install -r /opt/app/requirements.txt
+
+RUN sed -i "s|#master: salt|master: salt-master|g" /etc/salt/minion
+
+
+
+ENTRYPOINT ["salt-minion", "-l", "debug"]
+
+#WORKDIR /opt/app
+#ENTRYPOINT ["python3.6"]
+#CMD ["app.py"]
+

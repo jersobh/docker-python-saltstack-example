@@ -1,0 +1,9 @@
+salt-master:
+  container_name: salt-master
+  build: .
+  dockerfile: Dockerfile.master
+salt-minion:
+  build: .
+  dockerfile: Dockerfile.minion
+  links:
+   - salt-master
