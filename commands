@@ -1,13 +1,15 @@
 #Installing and scaling
-docker-compose scale salt-minion=4 salt-master=1
+docker container prune && docker volume prune
 docker-compose build
-docker-compose up
+docker-compose up --scale salt-minion=4 
 
 #access container bash 
+docker exec -i -t salt-master /bin/bash
 docker exec -i -t container_id /bin/bash
 
 #Get IP
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_id
+salt '*' cmd.run 'ip addr | grep eth0'
 
 #list accepted minions 
 salt-key -L
